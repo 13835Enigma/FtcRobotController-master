@@ -32,10 +32,9 @@ public class Driveyboi extends LinearOpMode {
     int LiftTarget;
     double strafe;
     double mult;
-    double ClawLim[] = {0.94, 0.62};
-    double TiltLim[] = {};
+    double Lims[] = {0.94, 0.68, 0.87, 0.14};
     double TiltPos = 0.5;
-    double ClawPos = 0.5;
+    double ClawPos = 0.67;
 
     public void runOpMode() {
         motorMode driveMode = new motorMode();
@@ -65,34 +64,38 @@ public class Driveyboi extends LinearOpMode {
         }
     }
     public void lift() {
-        if (gamepad1.a) speed = -190;
-        else if (gamepad1.y) speed = 190;
+        if (gamepad1.y && (Lift.getCurrentPosition() < 3020)) {
+            speed = 190;
+        }
+        else if (gamepad1.y && ((Lift.getCurrentPosition() < 3210) && (Lift.getCurrentPosition() >= 3020))) {
+            speed = 30;
+        }
+        else if (gamepad1.a && (Lift.getCurrentPosition() > 190)) {
+            speed = -190;
+        }
+        else if (gamepad1.a && ((Lift.getCurrentPosition() > 0) && (Lift.getCurrentPosition() <= 190))) {
+            speed = -30;
+        }
         else speed = 0;
-        if (speed > 0 && Lift.getCurrentPosition() >= 3210) {
-            speed = 0;
-        }
-        else if (speed < 0 && Lift.getCurrentPosition() <= 0) {
-            speed = 0;
-        }
         if (speed != 0) LiftTarget = Lift.getCurrentPosition() + speed;
         Lift.setTargetPosition(LiftTarget);
 
     }
     public void Claw() {
-        if (gamepad1.dpad_down) {
-            TiltPos += 0.04;
+        if (gamepad1.dpad_up && (Tilt.getPosition() < Lims[2])) {
+            TiltPos += 0.01;
         }
-        else if (gamepad1.dpad_up) {
-            TiltPos += 0.04;
+        else if (gamepad1.dpad_down && (Tilt.getPosition() > Lims[3])) {
+            TiltPos -= 0.01;
         }
-        /*else if (gamepad1.dpad_left) {
+        else if (gamepad1.dpad_left) {
             TiltPos = 0.5;
-        }*/
-        if (gamepad1.right_bumper) {
-            ClawPos += 0.04;
         }
-        else if (gamepad1.left_bumper) {
-            ClawPos -= 0.04;
+        if (gamepad1.right_bumper && (Claw.getPosition() < Lims[0])) {
+            ClawPos += 0.01;
+        }
+        else if (gamepad1.left_bumper && (Claw.getPosition() > Lims[1])) {
+            ClawPos -= 0.01;
         }
         Tilt.setPosition(TiltPos);
         Claw.setPosition(ClawPos);

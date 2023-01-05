@@ -23,9 +23,9 @@ public class motors {
         //program.steer = Rx / 1.8;
         //program.left = Range.clip(Ly + program.steer, -1.0,1.0);
         //program.right = Range.clip(Ly - program.steer, -1.0, 1.0);
-        program.FR.setVelocity((Range.clip(Ry - program.strafe, -1.0, 1.0) * 5000) / program.mult);
-        program.BR.setVelocity((Range.clip(Ry + program.strafe, -1.0, 1.0) * 5000) / program.mult);
-        program.FL.setVelocity((Range.clip(Ly + program.strafe, -1.0, 1.0) * 5000) / program.mult);
-        program.BL.setVelocity((Range.clip(Ly - program.strafe, -1.0, 1.0) * 5000) /program. mult);
+        program.FR.setVelocity((Range.clip(Ry + program.strafe, -1.0, 1.0) * 5000) / program.mult);
+        program.BR.setVelocity((Range.clip(Ry - program.strafe, -1.0, 1.0) * 5000) / program.mult);
+        program.FL.setVelocity((Range.clip(Ly - program.strafe, -1.0, 1.0) * 5000) / program.mult);
+        program.BL.setVelocity((Range.clip(Ly + program.strafe, -1.0, 1.0) * 5000) /program.mult);
     }
 }
