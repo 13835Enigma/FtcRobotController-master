@@ -5,6 +5,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
@@ -28,6 +29,8 @@ public class SleeveDetection extends OpenCvPipeline {
     public static int REGION_WIDTH = 30;
     public static int REGION_HEIGHT = 50;
 
+    public double[] rgb = {-1, -1, -1};
+    public String color;
     // Color definitions
     private final Scalar
             YELLOW  = new Scalar(255, 255, 0),
@@ -53,10 +56,14 @@ public class SleeveDetection extends OpenCvPipeline {
 
         // Get the minimum RGB value from every single channel
         double minColor = Math.min(sumColors.val[0], Math.min(sumColors.val[1], sumColors.val[2]));
+        rgb[0] = sumColors.val[0] / (REGION_HEIGHT * REGION_WIDTH);
+        rgb[1] = sumColors.val[1] / (REGION_HEIGHT * REGION_WIDTH);
+        rgb[2] = sumColors.val[2] / (REGION_HEIGHT * REGION_WIDTH);
 
         // Change the bounding box color based on the sleeve color
         if (sumColors.val[0] == minColor) {
             position = ParkingPosition.CENTER;
+            color = "Cyan";
             Imgproc.rectangle(
                     input,
                     sleeve_pointA,
@@ -66,6 +73,7 @@ public class SleeveDetection extends OpenCvPipeline {
             );
         } else if (sumColors.val[1] == minColor) {
             position = ParkingPosition.RIGHT;
+            color = "Magenta";
             Imgproc.rectangle(
                     input,
                     sleeve_pointA,
@@ -75,6 +83,7 @@ public class SleeveDetection extends OpenCvPipeline {
             );
         } else {
             position = ParkingPosition.LEFT;
+            color = "Yello";
             Imgproc.rectangle(
                     input,
                     sleeve_pointA,
@@ -93,4 +102,19 @@ public class SleeveDetection extends OpenCvPipeline {
     public ParkingPosition getPosition() {
         return position;
     }
+    public double[] getRGB() {
+        return rgb;
+    }
+    public String getColor() {
+        return color;
+    }
+    /*public String getColor() {
+        String Color;
+        String Colors[] = {"Red", "Green", "Blue", "Yello", "Magenta", "Cyan"};
+        if (rgb[0] > rgb[1] && rgb[0] > rgb[2]) Color = Colors[0];
+        else if (rgb[1] > rgb[0] && rgb[1] > rgb[2]) Color = Colors[1];
+        else if (rgb[2] > rgb[0] && rgb[2] > rgb[1]) Color = Colors[2];
+
+
+    }*/
 }

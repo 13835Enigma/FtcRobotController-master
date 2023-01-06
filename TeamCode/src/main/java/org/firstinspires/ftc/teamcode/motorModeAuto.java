@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-public class motorMode {
-    Driveyboi program = new Driveyboi();
+public class motorModeAuto {
+    Autonomous program = new Autonomous();
     public void driveMode(DcMotor.RunMode modes1) {
         program.FR.setMode(modes1);
         program.FL.setMode(modes1);

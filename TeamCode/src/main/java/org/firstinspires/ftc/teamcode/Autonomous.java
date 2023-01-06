@@ -1,23 +1,27 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.Camera;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
-
-@TeleOp(name="Driveyboi", group="Linear Opmode")
-
-public class Driveyboi extends LinearOpMode {
-
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous")
+public class Autonomous  extends LinearOpMode {
+    private SleeveDetection sleeveDetection;
+    private OpenCvCamera camera;
     BNO055IMU.Parameters imuParameters;
     Orientation angles;
     public BNO055IMU imu;
@@ -28,6 +32,7 @@ public class Driveyboi extends LinearOpMode {
     static DcMotorEx BL;
     static Servo Tilt;
     static Servo Claw;
+    static WebcamName WebcamMain;
     int speed;
     int LiftTarget;
     double strafe;
@@ -35,15 +40,11 @@ public class Driveyboi extends LinearOpMode {
     double Lims[] = {0.94, 0.68, 0.87, 0.14};
     double TiltPos = 0.5;
     double ClawPos = 0.67;
-    int liftPos = 1;
-    boolean liftSnap = false;
+    private String webcamName = "WebcamMain";
 
     public void runOpMode() {
-        motorMode driveMode = new motorMode();
-        motors motors = new motors();
+        motorModeAuto driveMode = new motorModeAuto();
         hardWareDecl();
-        driveMode.driveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        driveMode.driveMode(DcMotor.RunMode.RUN_USING_ENCODER);
         driveMode.driveDirect(DcMotorSimple.Direction.FORWARD);
         Lift.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         Lift.setTargetPosition(0);
@@ -55,71 +56,41 @@ public class Driveyboi extends LinearOpMode {
         imuParameters.loggingEnabled = false;
         imu.initialize(imuParameters);
         telemetry.update();
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName), cameraMonitorViewId);
+        sleeveDetection = new SleeveDetection();
+        camera.setPipeline(sleeveDetection);
+
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                camera.startStreaming(320,240, OpenCvCameraRotation.SIDEWAYS_LEFT);
+            }
+
+            @Override
+            public void onError(int errorCode) {}
+        });
         waitForStart();
         while (opModeIsActive()) {
-            Lift.setPower(1);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            motors.setMotors(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,gamepad1.right_stick_y, gamepad1.left_trigger, gamepad1.right_trigger, gamepad1.left_stick_button, gamepad1.right_stick_button);
-            lift();
-            Claw();
             tel();
         }
-    }
-    public void lift() {
-        if (gamepad1.y && (Lift.getCurrentPosition() < 3020)) {
-            speed = 150;
-            liftSnap = true;
-        }
-        else if (gamepad1.y && ((Lift.getCurrentPosition() < 3210) && (Lift.getCurrentPosition() >= 3020))) {
-            speed = 30;
-            liftSnap = true;
-        }
-        else if (gamepad1.a && (Lift.getCurrentPosition() > 190)) {
-            speed = -150;
-            liftSnap = true;
-        }
-        else if (gamepad1.a && ((Lift.getCurrentPosition() > 0) && (Lift.getCurrentPosition() <= 190))) {
-            speed = -30;
-            liftSnap = true;
-        }
-        else {
-            if (liftSnap) speed = 0;
-        }
-        if (speed != 0) LiftTarget = Lift.getCurrentPosition() + speed;
-        if (gamepad1.dpad_left) {
-            liftPos += 1;
-            liftSnap = false;
-        }
-        if ((liftPos % 2 == 0) && liftPos % 3 != 0) LiftTarget = 1605;
-        else if (liftPos % 3 == 0) LiftTarget = 3210;
-        else if ((liftPos % 2 != 0) && liftPos % 3 != 0) LiftTarget = 0;
-        Lift.setTargetPosition(LiftTarget);
 
-    }
-    public void Claw() {
-        if (gamepad1.dpad_up && (Tilt.getPosition() < Lims[2])) {
-            TiltPos += 0.01;
-        }
-        else if (gamepad1.dpad_down && (Tilt.getPosition() > Lims[3])) {
-            TiltPos -= 0.01;
-        }
-        else if (gamepad1.dpad_left) {
-            TiltPos = 0.5;
-        }
-        if (gamepad1.right_bumper && (Claw.getPosition() < Lims[0])) {
-            ClawPos += 0.01;
-        }
-        else if (gamepad1.left_bumper && (Claw.getPosition() > Lims[1])) {
-            ClawPos -= 0.01;
-        }
-        Tilt.setPosition(TiltPos);
-        Claw.setPosition(ClawPos);
+
     }
     public void tel() {
         telemetry.addData("Angle: ", angles.firstAngle);
         telemetry.addData("Lift: ", Lift.getCurrentPosition());
         telemetry.addData("Tilt: ", Tilt.getPosition());
         telemetry.addData("Claw: ", Claw.getPosition());
+        telemetry.addData("ROTATION: ", sleeveDetection.getPosition());
+        telemetry.addData("Color: ", sleeveDetection.getColor());
+        double[] rgb = sleeveDetection.getRGB();
+        telemetry.addData("Red: ", rgb[0]);
+        telemetry.addData("Green: ", rgb[1]);
+        telemetry.addData("Blue", rgb[2]);
         telemetry.update();
     }
     public void hardWareDecl() {
@@ -131,5 +102,6 @@ public class Driveyboi extends LinearOpMode {
         FL = hardwareMap.get(DcMotorEx.class, "FL");
         BR = hardwareMap.get(DcMotorEx.class, "BR");
         BL = hardwareMap.get(DcMotorEx.class, "BL");
+
     }
 }
