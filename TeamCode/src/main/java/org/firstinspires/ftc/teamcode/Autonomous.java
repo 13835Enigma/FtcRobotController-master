@@ -75,24 +75,30 @@ public class Autonomous  extends LinearOpMode {
         color = sleeveDetection.getColor();
         sleep(200);
         driveMode.driveToPos(-strafeVal,strafeVal,strafeVal,-strafeVal, 0.3);
-        while (FL.isBusy());
+        while (FL.isBusy()) {}
         Lift.setTargetPosition(1500);
-        driveMode.driveToPosAll(200, 0.4);
-        while (FL.isBusy());
+        while (Lift.isBusy()) {}
+        driveMode.driveToPosAll(270, 0.4);
+        while (FL.isBusy()) {}
         Tilt.setPosition(0.5);
+        sleep(300);
         Lift.setTargetPosition(1000);
-        while (Lift.isBusy());
+        while (Lift.isBusy()) {}
         Claw.setPosition(0.68);
-        Lift.setTargetPosition(0);
-        while (Lift.isBusy());
+        sleep(200);
         driveMode.driveToPosAll(-200, 0.4);
+        while(FL.isBusy()) {}
+        Lift.setTargetPosition(0);
+        Claw.setPosition(1);
         switch (color) {
             case "Cyan": Center();
             break;
             case "Magenta": Right();
             break;
             case "Yellow": Left();
+            break;
         }
+        while (FL.isBusy()) {}
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         tel();
     }
@@ -121,20 +127,20 @@ public class Autonomous  extends LinearOpMode {
     }
     public void Center() {
         motorModeAuto driveMode = new motorModeAuto();
-        driveMode.driveToPos(strafeVal,-strafeVal,-strafeVal, strafeVal, 0.3);
-        while (FL.isBusy());
-        driveMode.driveToPosAll(450, 0.4);
+        driveMode.driveToPos(strafeVal,-strafeVal,-strafeVal, strafeVal, 0.2);
+        while (FL.isBusy()) {}
+        driveMode.driveToPosAll(800, 0.3);
     }
     public void Right() {
         motorModeAuto driveMode = new motorModeAuto();
-        driveMode.driveToPos(-strafeVal,strafeVal,strafeVal, -strafeVal, 0.3);
-        while (FL.isBusy());
-        driveMode.driveToPosAll(450, 0.4);
+        driveMode.driveToPos(-strafeVal,strafeVal,strafeVal, -strafeVal, 0.2);
+        while (FL.isBusy()) {}
+        driveMode.driveToPosAll(800, 0.3);
     }
     public void Left() {
         motorModeAuto driveMode = new motorModeAuto();
-        driveMode.driveToPos(2*strafeVal,-2*strafeVal,-2*strafeVal, 2*strafeVal, 0.3);
-        while (FL.isBusy());
-        driveMode.driveToPosAll(450, 0.4);
+        driveMode.driveToPos(3*strafeVal,-3*strafeVal,-3*strafeVal, 3*strafeVal, 0.2);
+        while (FL.isBusy()) {}
+        driveMode.driveToPosAll(800, 0.3);
     }
 }

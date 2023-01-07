@@ -23,11 +23,11 @@ public class SleeveDetection extends OpenCvPipeline {
     }
 
     // TOPLEFT anchor point for the bounding box
-    private static Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(145, 168);
+    private static Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(20, 70);
 
     // Width and height for the bounding box
-    public static int REGION_WIDTH = 30;
-    public static int REGION_HEIGHT = 50;
+    public static int REGION_WIDTH = 60;
+    public static int REGION_HEIGHT = 40;
 
     public double[] rgb = {-1, -1, -1};
     public String color;
@@ -83,7 +83,7 @@ public class SleeveDetection extends OpenCvPipeline {
             );
         } else {
             position = ParkingPosition.LEFT;
-            color = "Yellow ";
+            color = "Yellow";
             Imgproc.rectangle(
                     input,
                     sleeve_pointA,

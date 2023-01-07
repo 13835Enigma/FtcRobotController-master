@@ -19,15 +19,15 @@ public class motorModeAuto {
         program.BL.setMode(modes1);
     }
     public void driveDirect(DcMotorSimple.Direction direct) {
-        program.FR.setDirection(direct);
+        program.FL.setDirection(direct);
         program.BL.setDirection(direct);
         if (direct.equals(DcMotorSimple.Direction.FORWARD)) {
+            program.FR.setDirection(DcMotorSimple.Direction.REVERSE);
             program.BR.setDirection(DcMotorSimple.Direction.REVERSE);
-            program.FL.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         else if (direct.equals(DcMotorSimple.Direction.REVERSE)) {
-            program.BR.setDirection(DcMotorSimple.Direction.REVERSE);
-            program.FL.setDirection(DcMotorSimple.Direction.REVERSE);
+            program.FR.setDirection(DcMotorSimple.Direction.FORWARD);
+            program.BR.setDirection(DcMotorSimple.Direction.FORWARD);
         }
     }
     public void drivePos(int FR, int BR, int FL, int BL) {
