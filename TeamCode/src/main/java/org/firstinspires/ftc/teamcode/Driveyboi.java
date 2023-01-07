@@ -32,11 +32,12 @@ public class Driveyboi extends LinearOpMode {
     int LiftTarget;
     double strafe;
     double mult;
-    double Lims[] = {0.94, 0.68, 0.87, 0.14};
+    double Lims[] = {1, 0.68, 0.87, 0.14};
     double TiltPos = 0.5;
     double ClawPos = 0.67;
     int liftPos = 1;
     boolean liftSnap = false;
+    double time = getRuntime();
 
     public void runOpMode() {
         motorMode driveMode = new motorMode();
@@ -82,17 +83,18 @@ public class Driveyboi extends LinearOpMode {
             speed = -30;
             liftSnap = true;
         }
-        else {
-            if (liftSnap) speed = 0;
-        }
-        if (speed != 0) LiftTarget = Lift.getCurrentPosition() + speed;
+        else speed = 0;
+        if ((speed != 0) && liftSnap == true) LiftTarget = Lift.getCurrentPosition() + speed;
         if (gamepad1.dpad_left) {
-            liftPos += 1;
+            if ((getRuntime() - time) > 0.3) {
+                liftPos += 1;
+                time = getRuntime();
+            }
             liftSnap = false;
+            if ((liftPos % 2 == 0) && liftPos % 3 != 0) LiftTarget = 1605;
+            else if (liftPos % 3 == 0) LiftTarget = 3210;
+            else if ((liftPos % 2 != 0) && liftPos % 3 != 0) LiftTarget = 0;
         }
-        if ((liftPos % 2 == 0) && liftPos % 3 != 0) LiftTarget = 1605;
-        else if (liftPos % 3 == 0) LiftTarget = 3210;
-        else if ((liftPos % 2 != 0) && liftPos % 3 != 0) LiftTarget = 0;
         Lift.setTargetPosition(LiftTarget);
 
     }

@@ -19,15 +19,15 @@ public class motorModeAuto {
         program.BL.setMode(modes1);
     }
     public void driveDirect(DcMotorSimple.Direction direct) {
-        program.FL.setDirection(direct);
+        program.FR.setDirection(direct);
         program.BL.setDirection(direct);
         if (direct.equals(DcMotorSimple.Direction.FORWARD)) {
             program.BR.setDirection(DcMotorSimple.Direction.REVERSE);
-            program.FR.setDirection(DcMotorSimple.Direction.REVERSE);
+            program.FL.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         else if (direct.equals(DcMotorSimple.Direction.REVERSE)) {
             program.BR.setDirection(DcMotorSimple.Direction.REVERSE);
-            program.FR.setDirection(DcMotorSimple.Direction.REVERSE);
+            program.FL.setDirection(DcMotorSimple.Direction.REVERSE);
         }
     }
     public void drivePos(int FR, int BR, int FL, int BL) {
@@ -36,17 +36,35 @@ public class motorModeAuto {
         program.FL.setTargetPosition(FL);
         program.BL.setTargetPosition(BL);
     }
-    public void drivePow(double Power) {
+    public void drivePosAll(int Pos) {
+        program.FR.setTargetPosition(Pos);
+        program.BR.setTargetPosition(Pos);
+        program.FL.setTargetPosition(Pos);
+        program.BL.setTargetPosition(Pos);
+    }
+    public void drivePow(double FR, double BR, double FL, double BL) {
+        program.FR.setPower(FR);
+        program.BR.setPower(BR);
+        program.FL.setPower(FL);
+        program.BL.setPower(BL);
+    }
+    public void drivePowAll(double Power) {
         program.FR.setPower(Power);
         program.BR.setPower(Power);
         program.FL.setPower(Power);
         program.BL.setPower(Power);
     }
-    public void runToPos(int FR, int BR, int FL, int BL, double Power) {
+    public void driveToPos(int FR, int BR, int FL, int BL, double Power) {
         driveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         drivePos(FR, BR, FL, BL);
         driveMode(DcMotor.RunMode.RUN_TO_POSITION);
-        drivePow(Power);
+        drivePowAll(Power);
+    }
+    public void driveToPosAll(int Pos, double Power) {
+        driveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        drivePosAll(Pos);
+        driveMode(DcMotor.RunMode.RUN_TO_POSITION);
+        drivePowAll(Power);
     }
     public void driveVelo(int FR, int BR, int FL, int BL) {
         program.FR.setVelocity(FR);

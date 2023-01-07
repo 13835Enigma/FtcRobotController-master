@@ -83,7 +83,7 @@ public class SleeveDetection extends OpenCvPipeline {
             );
         } else {
             position = ParkingPosition.LEFT;
-            color = "Yello";
+            color = "Yellow ";
             Imgproc.rectangle(
                     input,
                     sleeve_pointA,

@@ -32,20 +32,17 @@ public class Autonomous  extends LinearOpMode {
     static DcMotorEx BL;
     static Servo Tilt;
     static Servo Claw;
-    static WebcamName WebcamMain;
-    int speed;
-    int LiftTarget;
-    double strafe;
-    double mult;
     double Lims[] = {0.94, 0.68, 0.87, 0.14};
     double TiltPos = 0.5;
     double ClawPos = 0.67;
     private String webcamName = "WebcamMain";
+    int strafeVal = 400;
+    private String color;
 
     public void runOpMode() {
         motorModeAuto driveMode = new motorModeAuto();
         hardWareDecl();
-        driveMode.driveDirect(DcMotorSimple.Direction.FORWARD);
+        driveMode.driveDirect(DcMotorSimple.Direction.REVERSE);
         Lift.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         Lift.setTargetPosition(0);
         Lift.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
@@ -55,12 +52,10 @@ public class Autonomous  extends LinearOpMode {
         imuParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         imuParameters.loggingEnabled = false;
         imu.initialize(imuParameters);
-        telemetry.update();
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName), cameraMonitorViewId);
         sleeveDetection = new SleeveDetection();
         camera.setPipeline(sleeveDetection);
-
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
@@ -72,13 +67,34 @@ public class Autonomous  extends LinearOpMode {
             @Override
             public void onError(int errorCode) {}
         });
+        Claw.setPosition(1);
+        Tilt.setPosition(0.87);
+        Lift.setPower(0.4);
         waitForStart();
-        while (opModeIsActive()) {
-            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            tel();
+        sleep(300);
+        color = sleeveDetection.getColor();
+        sleep(200);
+        driveMode.driveToPos(-strafeVal,strafeVal,strafeVal,-strafeVal, 0.3);
+        while (FL.isBusy());
+        Lift.setTargetPosition(1500);
+        driveMode.driveToPosAll(200, 0.4);
+        while (FL.isBusy());
+        Tilt.setPosition(0.5);
+        Lift.setTargetPosition(1000);
+        while (Lift.isBusy());
+        Claw.setPosition(0.68);
+        Lift.setTargetPosition(0);
+        while (Lift.isBusy());
+        driveMode.driveToPosAll(-200, 0.4);
+        switch (color) {
+            case "Cyan": Center();
+            break;
+            case "Magenta": Right();
+            break;
+            case "Yellow": Left();
         }
-
-
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        tel();
     }
     public void tel() {
         telemetry.addData("Angle: ", angles.firstAngle);
@@ -102,6 +118,23 @@ public class Autonomous  extends LinearOpMode {
         FL = hardwareMap.get(DcMotorEx.class, "FL");
         BR = hardwareMap.get(DcMotorEx.class, "BR");
         BL = hardwareMap.get(DcMotorEx.class, "BL");
-
+    }
+    public void Center() {
+        motorModeAuto driveMode = new motorModeAuto();
+        driveMode.driveToPos(strafeVal,-strafeVal,-strafeVal, strafeVal, 0.3);
+        while (FL.isBusy());
+        driveMode.driveToPosAll(450, 0.4);
+    }
+    public void Right() {
+        motorModeAuto driveMode = new motorModeAuto();
+        driveMode.driveToPos(-strafeVal,strafeVal,strafeVal, -strafeVal, 0.3);
+        while (FL.isBusy());
+        driveMode.driveToPosAll(450, 0.4);
+    }
+    public void Left() {
+        motorModeAuto driveMode = new motorModeAuto();
+        driveMode.driveToPos(2*strafeVal,-2*strafeVal,-2*strafeVal, 2*strafeVal, 0.3);
+        while (FL.isBusy());
+        driveMode.driveToPosAll(450, 0.4);
     }
 }
