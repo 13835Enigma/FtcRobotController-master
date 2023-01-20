@@ -2,10 +2,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.util.Range;
 
-public class motors {
+public class motorsBigTest {
     Driveyboi program = new Driveyboi();
     double Ly, Lx, Rx, Ry, LT, RT;
     double FR, BR, FL, BL;
+    double steer1;
     double steer;
     boolean LB, RB;
     public void setMotors(double Ly1, double Lx1, double Rx1, double Ry1, double LT1, double RT1, boolean LB1, boolean RB1) {
@@ -18,11 +19,11 @@ public class motors {
         LB = LB1;
         RB = RB1;
         //program.forward = Ly;
-        program.strafe = Range.clip(RT - LT, -1.0, 1.0);
+        program.strafe = Lx;
         if (LB) program.mult = 5;
         else if (RB) program.mult = 1;
         else program.mult = 2.5;
-        steer = Rx / 1.8;
+        steer1 = Rx / 1.8;
         //program.left = Range.clip(Ly + program.steer, -1.0,1.0);
         //program.right = Range.clip(Ly - program.steer, -1.0, 1.0);
         FR = Range.clip(Ly + program.strafe, -1.0, 1.0);
@@ -32,6 +33,6 @@ public class motors {
         program.FR.setVelocity((Range.clip(FR + steer, -1.0, 1.0) * 5000) / program.mult);
         program.BR.setVelocity((Range.clip(BR + steer, -1.0, 1.0) * 5000) / program.mult);
         program.FL.setVelocity((Range.clip(FL - steer, -1.0, 1.0) * 5000) / program.mult);
-        program.BL.setVelocity((Range.clip(BL - steer, -1.0, 1.0) * 5000) /program.mult);
+        program.BL.setVelocity((Range.clip(BL - steer, -1.0, 1.0) * 5000) / program.mult);
     }
 }
