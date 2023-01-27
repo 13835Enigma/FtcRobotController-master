@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -32,7 +33,9 @@ public class DriveyboiBiGTest extends LinearOpMode {
     int LiftTarget;
     double targetAngle;
     double currentAngle;
-    double steer;
+    double targetAngle1 = 180;
+    double turnValHelper;
+    double turnVal = 0;
     double Lims[] = {1, 0.68, 0.87, 0.14};
     double TiltPos = 0.5;
     double ClawPos = 0.67;
@@ -52,20 +55,50 @@ public class DriveyboiBiGTest extends LinearOpMode {
         Lift.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         Lift.setDirection(DcMotorEx.Direction.REVERSE);
         imuParameters = new BNO055IMU.Parameters();
-        imuParameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+        imuParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imuParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         imuParameters.loggingEnabled = false;
         imu.initialize(imuParameters);
-        telemetry.update();
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        steer();
+        tel();
         waitForStart();
         while (opModeIsActive()) {
             Lift.setPower(1);
-            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);
-            motors.setMotors(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,gamepad1.right_stick_y, gamepad1.left_trigger, gamepad1.right_trigger, gamepad1.left_bumper, gamepad1.right_bumper);
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            steer();
+            motors.setMotors(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,gamepad1.right_stick_y, gamepad1.left_trigger, gamepad1.right_trigger, gamepad1.left_bumper, gamepad1.right_bumper, turnVal);
             lift();
             Claw();
             tel();
         }
+    }
+    public void steer() {
+        currentAngle = angles.firstAngle + 180;
+        targetAngle1 -= (5 * gamepad1.right_stick_x);
+        targetAngle = targetAngle1 % 360;
+        if (targetAngle < 0) {
+            do {
+                targetAngle += 360;
+            } while(targetAngle < 0);
+        }
+        turnValHelper = targetAngle - currentAngle;
+        if (turnValHelper < 0) {
+            if (turnValHelper <= -180) {
+                turnValHelper += 360;
+            }
+        }
+        else if (turnValHelper >= 0) {
+            if (turnValHelper >= 180) {
+                turnValHelper -= 360;
+            }
+        }
+        if (Math.abs(turnValHelper) <= 1) turnValHelper = 0;
+        if (Math.abs(turnValHelper) >= 50) {
+            if (turnValHelper < 0) turnValHelper = -50;
+            else if (turnValHelper > 0) turnValHelper = 50;
+        }
+        turnVal = -turnValHelper;
     }
     public void lift() {
         if (gamepad1.dpad_up && (Lift.getCurrentPosition() < 3020)) {
@@ -138,6 +171,9 @@ public class DriveyboiBiGTest extends LinearOpMode {
     }
     public void tel() {
         telemetry.addData("Angle: ", angles.firstAngle);
+        telemetry.addData("Angle 360: ", currentAngle);
+        telemetry.addData("Target Angle: ", targetAngle);
+        telemetry.addData("Target Angle1: ", targetAngle1);
         telemetry.addData("Lift: ", Lift.getCurrentPosition());
         telemetry.addData("Tilt: ", Tilt.getPosition());
         telemetry.addData("Claw: ", Claw.getPosition());
