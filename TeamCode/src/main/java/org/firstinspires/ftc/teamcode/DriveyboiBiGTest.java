@@ -94,9 +94,9 @@ public class DriveyboiBiGTest extends LinearOpMode {
             }
         }
         if (Math.abs(turnValHelper) <= 1) turnValHelper = 0;
-        if (Math.abs(turnValHelper) >= 50) {
-            if (turnValHelper < 0) turnValHelper = -50;
-            else if (turnValHelper > 0) turnValHelper = 50;
+        if (Math.abs(turnValHelper) >= 80) {
+            if (turnValHelper < 0) turnValHelper = -80;
+            else if (turnValHelper > 0) turnValHelper = 80;
         }
         turnVal = -turnValHelper;
     }
