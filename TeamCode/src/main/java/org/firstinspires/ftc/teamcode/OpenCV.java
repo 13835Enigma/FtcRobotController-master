@@ -9,7 +9,7 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-public class SleeveDetection extends OpenCvPipeline {
+public class OpenCV extends OpenCvPipeline {
     /*
     YELLOW  = Parking Left
     CYAN    = Parking Middle
@@ -29,11 +29,10 @@ public class SleeveDetection extends OpenCvPipeline {
     public int REGION_HEIGHT = 40;
 
     public double[] rgb = {-1, -1, -1};
-    public String color;
     // Color definitions
     private final Scalar
-            YELLOW  = new Scalar(255, 255, 0),
-            CYAN    = new Scalar(0, 255, 255),
+            YELLOW = new Scalar(255, 255, 0),
+            CYAN = new Scalar(0, 255, 255),
             MAGENTA = new Scalar(255, 0, 255);
 
     // Anchor point definitions
@@ -45,7 +44,7 @@ public class SleeveDetection extends OpenCvPipeline {
             SLEEVE_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
 
     // Running variable storing the parking position
-    private volatile ParkingPosition position = ParkingPosition.LEFT;
+    private volatile SleeveDetection.ParkingPosition position = SleeveDetection.ParkingPosition.LEFT;
 
     @Override
     public Mat processFrame(Mat input) {
@@ -58,58 +57,26 @@ public class SleeveDetection extends OpenCvPipeline {
         rgb[0] = sumColors.val[0] / (REGION_HEIGHT * REGION_WIDTH);
         rgb[1] = sumColors.val[1] / (REGION_HEIGHT * REGION_WIDTH);
         rgb[2] = sumColors.val[2] / (REGION_HEIGHT * REGION_WIDTH);
-
-        // Change the bounding box color based on the sleeve color
-        if (sumColors.val[0] == minColor) {
-            position = ParkingPosition.CENTER;
-            color = "Cyan";
-            Imgproc.rectangle(
-                    input,
-                    sleeve_pointA,
-                    sleeve_pointB,
-                    CYAN,
-                    2
-            );
-        } else if (sumColors.val[1] == minColor) {
-            position = ParkingPosition.RIGHT;
-            color = "Magenta";
-            Imgproc.rectangle(
-                    input,
-                    sleeve_pointA,
-                    sleeve_pointB,
-                    MAGENTA,
-                    2
-            );
-        } else {
-            position = ParkingPosition.LEFT;
-            color = "Yellow";
-            Imgproc.rectangle(
-                    input,
-                    sleeve_pointA,
-                    sleeve_pointB,
-                    YELLOW,
-                    2
-            );
-        }
-
+        Imgproc.rectangle(
+                input,
+                sleeve_pointA,
+                sleeve_pointB,
+                CYAN,
+                2
+        );
         // Release and return input
         areaMat.release();
         return input;
     }
 
     // Returns an enum being the current position where the robot will park
-    public ParkingPosition getPosition() {
-        return position;
-    }
     public double[] getRGB() {
         return rgb;
-    }
-    public String getColor() {
-        return color;
     }
     public void newBox(double x, double y, int width, int height) {
         sleeve_pointA = new Point(x, y);
         sleeve_pointB = new Point(
                 x + width,
-                y + height);    }
+                y + height);
+    }
 }
