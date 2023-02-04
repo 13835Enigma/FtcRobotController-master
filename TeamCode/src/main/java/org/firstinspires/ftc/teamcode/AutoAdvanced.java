@@ -75,8 +75,6 @@ public class AutoAdvanced extends LinearOpMode {
         driveVal = 800;
         driveMode.driveToPos(-driveVal,driveVal,driveVal,-driveVal, 0.3);
         while (FL.isBusy()) {}
-
-
         switch (color) {
             case "Cyan": Center();
             break;

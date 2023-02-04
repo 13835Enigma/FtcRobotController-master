@@ -40,7 +40,7 @@ public class CameraTesting extends LinearOpMode {
             @Override
             public void onError(int errorCode) {}
         });
-        OpenCV.newBox(40, 10, 10, 50);
+        OpenCV.newBox(40, 10, 40, 50);
         waitForStart();
         while (opModeIsActive()) {
             tel();
@@ -51,6 +51,7 @@ public class CameraTesting extends LinearOpMode {
         telemetry.addData("Red: ", rgb[0]);
         telemetry.addData("Green: ", rgb[1]);
         telemetry.addData("Blue", rgb[2]);
+        telemetry.addData("Color: ", OpenCV.getColor());
         telemetry.update();
     }
 }

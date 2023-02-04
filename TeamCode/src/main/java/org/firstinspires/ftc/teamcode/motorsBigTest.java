@@ -19,7 +19,7 @@ public class motorsBigTest {
         RT = RT1;
         LB = LB1;
         RB = RB1;
-        steer = turnVal / 80;
+        steer = turnVal / 60;
         //program.forward = Ly;
         strafe = Lx;
         if (LB) mult = 5;

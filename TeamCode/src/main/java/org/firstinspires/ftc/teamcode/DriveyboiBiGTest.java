@@ -36,8 +36,8 @@ public class DriveyboiBiGTest extends LinearOpMode {
     double targetAngle1 = 180;
     double turnValHelper;
     double turnVal = 0;
-    double Lims[] = {1, 0.68, 0.87, 0.14};
-    double TiltPos = 0.5;
+    double Lims[] = {1, 0.68, 0.87, 0.36};
+    double TiltPos = 0.48;
     double ClawPos = 0.67;
     int liftPos = 0;
     boolean liftSnap = false;
@@ -94,9 +94,9 @@ public class DriveyboiBiGTest extends LinearOpMode {
             }
         }
         if (Math.abs(turnValHelper) <= 1) turnValHelper = 0;
-        if (Math.abs(turnValHelper) >= 80) {
-            if (turnValHelper < 0) turnValHelper = -80;
-            else if (turnValHelper > 0) turnValHelper = 80;
+        if (Math.abs(turnValHelper) >= 60) {
+            if (turnValHelper < 0) turnValHelper = -60;
+            else if (turnValHelper > 0) turnValHelper = 60;
         }
         turnVal = -turnValHelper;
     }
