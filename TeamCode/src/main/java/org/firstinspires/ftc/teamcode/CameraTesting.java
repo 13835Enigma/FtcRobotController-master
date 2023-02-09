@@ -23,6 +23,14 @@ public class CameraTesting extends LinearOpMode {
     private OpenCV OpenCV;
     private OpenCvCamera camera;
     private String webcamName = "WebcamMain";
+    double[] rgb;
+    double x = 40;
+    double y = 10;
+    int width = 60;
+    int height = 30;
+    double LX = 0;
+    double LY = 0;
+
 
     public void runOpMode() {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -40,18 +48,37 @@ public class CameraTesting extends LinearOpMode {
             @Override
             public void onError(int errorCode) {}
         });
-        OpenCV.newBox(40, 10, 40, 50);
+        OpenCV.newBox(x, y, width, height);
         waitForStart();
         while (opModeIsActive()) {
+            LX = gamepad1.left_stick_x / 50;
+            LY = gamepad1.left_stick_y / 50;
+            if (((x + width) + LX) <= 240) {
+                if ((x + LX) >= 0) {
+                    x += LX;
+                }
+            }
+            if (((y + height) + LY) <= 320) {
+                if ((y + LY) >= 0) {
+                    y += LY;
+                }
+            }
+            OpenCV.newBox(x, y, width, height);
+            rgb = OpenCV.getRGB();
             tel();
         }
     }
     public void tel() {
-        double[] rgb = OpenCV.getRGB();
+        telemetry.addData("stick: ", gamepad1.left_stick_x);
+        telemetry.addData("X: ", x);
+        telemetry.addData("Y: ", y);
+        telemetry.addData("W: ", width);
+        telemetry.addData("H: ", height);
         telemetry.addData("Red: ", rgb[0]);
         telemetry.addData("Green: ", rgb[1]);
         telemetry.addData("Blue", rgb[2]);
         telemetry.addData("Color: ", OpenCV.getColor());
+        telemetry.addData("Sleeve Color: ", OpenCV.getSleeveColor());
         telemetry.update();
     }
 }

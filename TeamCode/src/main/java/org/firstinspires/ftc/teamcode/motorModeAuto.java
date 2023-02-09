@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public class motorModeAuto {
-    Autonomous program = new Autonomous();
+    AutoAdvanced program = new AutoAdvanced();
     public void driveMode(DcMotor.RunMode modes1) {
         program.FR.setMode(modes1);
         program.FL.setMode(modes1);

@@ -18,7 +18,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "AutoAdvanced")
 public class AutoAdvanced extends LinearOpMode {
-    private SleeveDetection sleeveDetection;
+    private OpenCV OpenCV;
     private OpenCvCamera camera;
     BNO055IMU.Parameters imuParameters;
     Orientation angles;
@@ -36,6 +36,9 @@ public class AutoAdvanced extends LinearOpMode {
     private String webcamName = "WebcamMain";
     int driveVal;
     private String color;
+    String sideLR = "Left";
+    String sideRB = "Blue";
+    boolean lock = false;
 
     public void runOpMode() {
         motorModeAuto driveMode = new motorModeAuto();
@@ -52,8 +55,8 @@ public class AutoAdvanced extends LinearOpMode {
         imu.initialize(imuParameters);
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName), cameraMonitorViewId);
-        sleeveDetection = new SleeveDetection();
-        camera.setPipeline(sleeveDetection);
+        OpenCV = new OpenCV();
+        camera.setPipeline(OpenCV);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
@@ -68,13 +71,58 @@ public class AutoAdvanced extends LinearOpMode {
         Claw.setPosition(1);
         Tilt.setPosition(0.87);
         Lift.setPower(0.4);
+        do {
+            if (gamepad1.dpad_left) sideLR = "Left";
+            if (gamepad1.dpad_right) sideLR = "Right";
+            if (gamepad1.dpad_up) sideRB = "Blue";
+            if (gamepad1.dpad_down) sideRB = "Red";
+            if (gamepad1.start) lock = true;
+            switch (sideLR) {
+                case "Left": {
+                    OpenCV.newBox(31, 55, 60, 30);
+                    color = OpenCV.getSleeveColor();
+                }
+                case "Right": {
+                    OpenCV.newBox(29, 45, 60, 30);
+                    color = OpenCV.getSleeveColor();
+                }
+            }
+            tel();
+            telemetry.update();
+        } while (lock == false);
         waitForStart();
         sleep(300);
-        color = sleeveDetection.getColor();
+        switch (sideLR) {
+            case "Left": {
+                OpenCV.newBox(31, 55, 60, 30);
+                color = OpenCV.getSleeveColor();
+                sleep(300);
+                driveVal = 400;
+            }
+            case "Right": {
+                OpenCV.newBox(29, 45, 60, 30);
+                color = OpenCV.getSleeveColor();
+                sleep(300);
+                driveVal = -400;
+            }
+        }
         sleep(200);
-        driveVal = 800;
         driveMode.driveToPos(-driveVal,driveVal,driveVal,-driveVal, 0.3);
         while (FL.isBusy()) {}
+        Lift.setTargetPosition(1500);
+        while (Lift.isBusy()) {}
+        driveMode.driveToPosAll(270, 0.4);
+        while (FL.isBusy()) {}
+        Tilt.setPosition(0.5);
+        sleep(300);
+        Lift.setTargetPosition(1000);
+        while (Lift.isBusy()) {}
+        Claw.setPosition(0.68);
+        sleep(200);
+        driveMode.driveToPosAll(-200, 0.4);
+        while(FL.isBusy()) {}
+        Lift.setTargetPosition(0);
+        Claw.setPosition(1);
         switch (color) {
             case "Cyan": Center();
             break;
@@ -88,17 +136,9 @@ public class AutoAdvanced extends LinearOpMode {
         tel();
     }
     public void tel() {
-        telemetry.addData("Angle: ", angles.firstAngle);
-        telemetry.addData("Lift: ", Lift.getCurrentPosition());
-        telemetry.addData("Tilt: ", Tilt.getPosition());
-        telemetry.addData("Claw: ", Claw.getPosition());
-        telemetry.addData("ROTATION: ", sleeveDetection.getPosition());
-        telemetry.addData("Color: ", sleeveDetection.getColor());
-        double[] rgb = sleeveDetection.getRGB();
-        telemetry.addData("Red: ", rgb[0]);
-        telemetry.addData("Green: ", rgb[1]);
-        telemetry.addData("Blue", rgb[2]);
-        telemetry.update();
+        telemetry.addData("Side: ", sideLR);
+        telemetry.addData("Team Color: ", sideRB);
+        telemetry.addData("Color: ", OpenCV.getSleeveColor());
     }
     public void hardWareDecl() {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
@@ -116,13 +156,13 @@ public class AutoAdvanced extends LinearOpMode {
         while (FL.isBusy()) {}
         driveMode.driveToPosAll(800, 0.3);
     }
-    public void Right() {
+    public void Left() {
         motorModeAuto driveMode = new motorModeAuto();
         driveMode.driveToPos(-driveVal,driveVal,driveVal, -driveVal, 0.2);
         while (FL.isBusy()) {}
         driveMode.driveToPosAll(800, 0.3);
     }
-    public void Left() {
+    public void Right() {
         motorModeAuto driveMode = new motorModeAuto();
         driveMode.driveToPos(3*driveVal,-3*driveVal,-3*driveVal, 3*driveVal, 0.2);
         while (FL.isBusy()) {}

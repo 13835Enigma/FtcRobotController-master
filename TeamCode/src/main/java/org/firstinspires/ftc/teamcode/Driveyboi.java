@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -47,9 +48,9 @@ public class Driveyboi extends LinearOpMode {
         driveMode.driveMode(DcMotor.RunMode.RUN_USING_ENCODER);
         driveMode.driveDirect(DcMotorSimple.Direction.FORWARD);
         Lift.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        Lift.setTargetPosition(0);
-        Lift.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        Lift.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         Lift.setDirection(DcMotorEx.Direction.REVERSE);
+        Lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         imuParameters = new BNO055IMU.Parameters();
         imuParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         imuParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -58,7 +59,7 @@ public class Driveyboi extends LinearOpMode {
         telemetry.update();
         waitForStart();
         while (opModeIsActive()) {
-            Lift.setPower(1);
+            Lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             motors.setMotors(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,gamepad1.right_stick_y, gamepad1.left_trigger, gamepad1.right_trigger, gamepad1.left_bumper, gamepad1.right_bumper);
             lift();
@@ -67,7 +68,16 @@ public class Driveyboi extends LinearOpMode {
         }
     }
     public void lift() {
-        if (gamepad1.dpad_up && (Lift.getCurrentPosition() < 3020)) {
+        if ((Lift.getCurrentPosition() > 0) && (Lift.getCurrentPosition() < 3210)) {
+            Lift.setVelocity(5000 * (Range.clip(gamepad1.right_trigger - gamepad1.left_trigger, -1.0 ,1.0) + 0.001));
+        }
+        else if (Lift.getCurrentPosition() <= 0) {
+            Lift.setVelocity(5000 * gamepad1.right_trigger);
+        }
+        else if (Lift.getCurrentPosition() >= 3210) {
+            Lift.setVelocity(5000 * gamepad1.left_trigger);
+        }
+        /*if (gamepad1.dpad_up && (Lift.getCurrentPosition() < 3020)) {
             speed = 150;
             liftSnap = true;
         }
@@ -114,7 +124,7 @@ public class Driveyboi extends LinearOpMode {
             else if (liftPos == 3) LiftTarget = 3000;
         }
         Lift.setTargetPosition(LiftTarget);
-
+         */
     }
     public void Claw() {
         if (gamepad1.dpad_left && (Tilt.getPosition() < Lims[2])) {
@@ -140,6 +150,7 @@ public class Driveyboi extends LinearOpMode {
         telemetry.addData("Lift: ", Lift.getCurrentPosition());
         telemetry.addData("Tilt: ", Tilt.getPosition());
         telemetry.addData("Claw: ", Claw.getPosition());
+        telemetry.addData("Triggers: ", Range.clip((gamepad1.left_trigger * 5000) - (gamepad1.right_trigger * 5000), -5000.0, 5000.0));
         telemetry.update();
     }
     public void hardWareDecl() {

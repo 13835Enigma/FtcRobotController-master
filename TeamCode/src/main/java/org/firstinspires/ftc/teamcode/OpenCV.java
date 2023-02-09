@@ -35,21 +35,21 @@ public class OpenCV extends OpenCvPipeline {
     private final Scalar
             YELLOW = new Scalar(255, 255, 0),
             CYAN = new Scalar(0, 255, 255),
-            MAGENTA = new Scalar(255, 0, 255);
-
-    // Anchor point definitions
-    Point sleeve_pointA = new Point(
-            SLEEVE_TOPLEFT_ANCHOR_POINT.x,
-            SLEEVE_TOPLEFT_ANCHOR_POINT.y);
-    Point sleeve_pointB = new Point(
-            SLEEVE_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
-            SLEEVE_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
-
+            MAGENTA = new Scalar(255, 0, 255),
+            RED = new Scalar(255, 0, 0),
+            BLUE = new Scalar(0, 0, 255),
+            GREEN = new Scalar(0, 255, 0);
     // Running variable storing the parking position
     private volatile SleeveDetection.ParkingPosition position = SleeveDetection.ParkingPosition.LEFT;
 
     @Override
     public Mat processFrame(Mat input) {
+        Point sleeve_pointA = new Point(
+                SLEEVE_TOPLEFT_ANCHOR_POINT.x,
+                SLEEVE_TOPLEFT_ANCHOR_POINT.y);
+        Point sleeve_pointB = new Point(
+                SLEEVE_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
+                SLEEVE_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
         // Get the submat frame, and then sum all the values
         Mat areaMat = input.submat(new Rect(sleeve_pointA, sleeve_pointB));
         Scalar sumColors = Core.sumElems(areaMat);
@@ -130,9 +130,8 @@ public class OpenCV extends OpenCvPipeline {
         return color;
     }
     public void newBox(double x, double y, int width, int height) {
-        sleeve_pointA = new Point(x, y);
-        sleeve_pointB = new Point(
-                x + width,
-                y + height);
+        SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(x, y);
+        REGION_WIDTH = width;
+        REGION_HEIGHT = height;
     }
 }

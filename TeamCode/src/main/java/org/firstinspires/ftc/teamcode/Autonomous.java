@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -18,7 +19,7 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous")
+@Disabled//@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous")
 public class Autonomous  extends LinearOpMode {
     private SleeveDetection sleeveDetection;
     private OpenCvCamera camera;
@@ -37,7 +38,7 @@ public class Autonomous  extends LinearOpMode {
     double ClawPos = 0.67;
     private String webcamName = "WebcamMain";
     int strafeVal = 400;
-    private String color;
+    private String color = "Yellow";
 
     public void runOpMode() {
         motorModeAuto driveMode = new motorModeAuto();
