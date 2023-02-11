@@ -33,8 +33,8 @@ public class Driveyboi extends LinearOpMode {
     int LiftTarget;
     double strafe;
     double mult;
-    double Lims[] = {1, 0.68, 0.87, 0.14};
-    double TiltPos = 0.5;
+    double Lims[] = {1, 0.68, 0.87, 0.32};
+    double TiltPos = 0.45;
     double ClawPos = 0.67;
     int liftPos = 0;
     boolean liftSnap = false;
@@ -127,14 +127,14 @@ public class Driveyboi extends LinearOpMode {
          */
     }
     public void Claw() {
-        if (gamepad1.dpad_left && (Tilt.getPosition() < Lims[2])) {
+        if (gamepad1.dpad_up && (Tilt.getPosition() < Lims[2])) {
             TiltPos += 0.01;
         }
-        else if (gamepad1.dpad_right && (Tilt.getPosition() > Lims[3])) {
+        else if (gamepad1.dpad_down && (Tilt.getPosition() > Lims[3])) {
             TiltPos -= 0.01;
         }
         else if (gamepad1.b) {
-            TiltPos = 0.5;
+            TiltPos = 0.45;
         }
         if (gamepad1.left_stick_button) {
             ClawPos = 0.68;
