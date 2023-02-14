@@ -136,6 +136,7 @@ public class Driveyboi extends LinearOpMode {
         else if (gamepad1.b) {
             TiltPos = 0.45;
         }
+        else if (gamepad1.y) TiltPos = 0.87;
         if (gamepad1.left_stick_button) {
             ClawPos = 0.68;
         }

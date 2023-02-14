@@ -26,10 +26,12 @@ public class CameraTestingMulti extends LinearOpMode {
     double[] rgb;
     double LX = 0;
     double LY = 0;
+    double RX = 0;
+    double RY = 0;
     double[] x = {50, 20, 40};
     double[] y = {50, 20, 40};
-    int[] width = {60, 60, 60};
-    int[] height = {30, 10, 10};
+    double[] width = {60, 60, 60};
+    double[] height = {30, 10, 10};
     String box = "Main";
 
 
@@ -43,7 +45,7 @@ public class CameraTestingMulti extends LinearOpMode {
             @Override
             public void onOpened()
             {
-                camera.startStreaming(320,240, OpenCvCameraRotation.SIDEWAYS_LEFT);
+                camera.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -54,6 +56,8 @@ public class CameraTestingMulti extends LinearOpMode {
         while (opModeIsActive()) {
             LX = -gamepad1.left_stick_y / 50;
             LY = gamepad1.left_stick_x / 50;
+            RX = -gamepad1.right_stick_y / 150;
+            RY = gamepad1.right_stick_x / 150;
             if (gamepad1.x) box = "Left";
             else if (gamepad1.b) box = "Right";
             else if (gamepad1.y) box = "Main";
@@ -62,22 +66,34 @@ public class CameraTestingMulti extends LinearOpMode {
                     if ((x[0] + LX) >= 0) {
                         x[0] += LX;
                     }
+                    if ((width[0] + RX) >= 0) {
+                        width[0] += RX;
+                    }
                 }
                 if (((y[0] + height[0]) + LY) <= 320) {
                     if ((y[0] + LY) >= 0) {
                         y[0] += LY;
                     }
+                    if ((height[0] + RY) >= 0) {
+                        height[0] += RY;
+                    }
                 }
             }
             if (box == "Left") {
-                if (((x[1] + width[1]) + LX) <= 240) {
+                if (((x[1] + width[1]) + LX + RX) <= 240) {
                     if ((x[1] + LX) >= 0) {
                         x[1] += LX;
+                    }
+                    if ((width[1] + RX) >= 0) {
+                        width[1] += RX;
                     }
                 }
                 if (((y[1] + height[1]) + LY) <= 320) {
                     if ((y[1] + LY) >= 0) {
                         y[1] += LY;
+                    }
+                    if ((height[1] + RY) >= 0) {
+                        height[1] += RY;
                     }
                 }
             }
@@ -86,10 +102,16 @@ public class CameraTestingMulti extends LinearOpMode {
                     if ((x[2] + LX) >= 0) {
                         x[2] += LX;
                     }
+                    if ((width[2] + RX) >= 0) {
+                        width[2] += RX;
+                    }
                 }
                 if (((y[2] + height[2]) + LY) <= 320) {
                     if ((y[2] + LY) >= 0) {
                         y[2] += LY;
+                    }
+                    if ((height[2] + RY) >= 0) {
+                        height[2] += RY;
                     }
                 }
             }
@@ -101,15 +123,18 @@ public class CameraTestingMulti extends LinearOpMode {
     public void tel() {
         telemetry.addData("X Main: ", x[0]);
         telemetry.addData("Y Main: ", y[0]);
+        telemetry.addData("Width Main: ", width[0]);
+        telemetry.addData("Height Main: ", height[0]);
+        telemetry.addData("Color Main: ", OpenCV.getColor(0));
         telemetry.addData("X Left: ", x[1]);
         telemetry.addData("Y Left: ", y[1]);
+        telemetry.addData("Width Left: ", width[1]);
+        telemetry.addData("Height Left: ", height[1]);
+        telemetry.addData("Color Left: ", OpenCV.getColor(1));
         telemetry.addData("X Right: ", x[2]);
         telemetry.addData("Y Right: ", y[2]);
-        telemetry.addData("Red: ", rgb[0]);
-        telemetry.addData("Green: ", rgb[1]);
-        telemetry.addData("Blue", rgb[2]);
-        telemetry.addData("Color Main: ", OpenCV.getColor(0));
-        telemetry.addData("Color Left: ", OpenCV.getColor(1));
+        telemetry.addData("Width Main: ", width[2]);
+        telemetry.addData("Height Right: ", height[2]);
         telemetry.addData("Color Right: ", OpenCV.getColor(2));
         telemetry.update();
     }

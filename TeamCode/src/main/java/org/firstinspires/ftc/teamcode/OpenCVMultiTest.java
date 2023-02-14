@@ -25,8 +25,8 @@ public class OpenCVMultiTest extends OpenCvPipeline {
     public Point[] SLEEVE_TOPLEFT_ANCHOR_POINT = {new Point(20, 70), new Point(20, 70), new Point(20, 70)};
 
     // Width and height for the bounding box
-    public int[] REGION_WIDTH = {60, 60, 60};
-    public int[] REGION_HEIGHT = {40, 40, 40};
+    public double[] REGION_WIDTH = {60, 60, 60};
+    public double[] REGION_HEIGHT = {40, 40, 40};
 
     public double[] rgb = {-1, -1, -1};
     public String sleeveColor;
@@ -184,7 +184,8 @@ public class OpenCVMultiTest extends OpenCvPipeline {
     public String getColor(int boxNum) {
         return color[boxNum];
     }
-    public void newBoxes(double x, double y, int width, int height, double x1, double y1, int width1, int height1, double x2, double y2, int width2, int height2) {
+
+    public void newBoxes(double x, double y, double width, double height, double x1, double y1, double width1, double height1, double x2, double y2, double width2, double height2) {
         SLEEVE_TOPLEFT_ANCHOR_POINT[0] = new Point(x, y);
         REGION_WIDTH[0] = width;
         REGION_HEIGHT[0] = height;
