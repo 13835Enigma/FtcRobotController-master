@@ -9,16 +9,19 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 
 @TeleOp(name="Driveyboi", group="Linear Opmode")
 
 public class Driveyboi extends LinearOpMode {
-
     BNO055IMU.Parameters imuParameters;
     Orientation angles;
     public BNO055IMU imu;
@@ -37,16 +40,36 @@ public class Driveyboi extends LinearOpMode {
     double TiltPos = 0.45;
     double ClawPos = 0.67;
     int liftPos = 0;
-    boolean liftSnap = false;
+    private OpenCvCamera camera;
+    private OpenCVMultiTest OpenCV;
+
+    private String webcamName = "WebcamMain";
+    boolean PoleFind = false;
     double time = getRuntime();
 
     public void runOpMode() {
+        Polefinder poleFinder = new Polefinder();
         motorMode driveMode = new motorMode();
         motors motors = new motors();
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName), cameraMonitorViewId);
+        OpenCV = new OpenCVMultiTest();
+        camera.setPipeline(OpenCV);
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+            }
+        });
         hardWareDecl();
         driveMode.driveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         driveMode.driveMode(DcMotor.RunMode.RUN_USING_ENCODER);
         driveMode.driveDirect(DcMotorSimple.Direction.FORWARD);
+        driveMode.zeroPowDriveTrain(DcMotor.ZeroPowerBehavior.BRAKE);
         Lift.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         Lift.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         Lift.setDirection(DcMotorEx.Direction.REVERSE);
@@ -145,6 +168,10 @@ public class Driveyboi extends LinearOpMode {
         }
         Tilt.setPosition(TiltPos);
         Claw.setPosition(ClawPos);
+    }
+    public void poleFind() {
+        if (gamepad1.a) PoleFind = true;
+        else if (gamepad1.a) PoleFind = false;
     }
     public void tel() {
         telemetry.addData("Angle: ", angles.firstAngle);

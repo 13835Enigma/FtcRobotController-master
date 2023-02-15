@@ -18,6 +18,13 @@ public class motorMode {
         program.BR.setMode(modes1);
         program.BL.setMode(modes1);
     }
+    public void zeroPowDriveTrain(DcMotor.ZeroPowerBehavior zeropow) {
+        program.FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        program.FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        program.BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        program.BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+    }
     public void driveDirect(DcMotorSimple.Direction direct) {
         program.FL.setDirection(direct);
         program.BL.setDirection(direct);
