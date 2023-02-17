@@ -30,6 +30,8 @@ public class CameraTesting extends LinearOpMode {
     int height = 30;
     double LX = 0;
     double LY = 0;
+    double RY = 0;
+    double RX = 0;
 
 
     public void runOpMode() {
@@ -42,7 +44,7 @@ public class CameraTesting extends LinearOpMode {
             @Override
             public void onOpened()
             {
-                camera.startStreaming(320,240, OpenCvCameraRotation.SIDEWAYS_LEFT);
+                camera.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -54,14 +56,22 @@ public class CameraTesting extends LinearOpMode {
         while (opModeIsActive()) {
             LX = -gamepad1.left_stick_y / 50;
             LY = gamepad1.left_stick_x / 50;
+            RX = -gamepad1.right_stick_y / 150;
+            RY = gamepad1.right_stick_x / 150;
             if (((x + width) + LX) <= 240) {
                 if ((x + LX) >= 0) {
                     x += LX;
+                }
+                if ((width + RX) >= 0) {
+                    width += RX;
                 }
             }
             if (((y + height) + LY) <= 320) {
                 if ((y + LY) >= 0) {
                     y += LY;
+                }
+                if ((height + RY) >= 0) {
+                    height += RY;
                 }
             }
             OpenCV.newBox(x, y, width, height);

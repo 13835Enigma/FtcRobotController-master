@@ -10,7 +10,6 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Polefinder")
 
 public class Polefinder extends LinearOpMode {
-    private OpenCVMultiTest OpenCV;
     private OpenCvCamera camera;
     private String webcamName = "WebcamMain";
     double[] x = {200, 200, 200};
@@ -22,11 +21,12 @@ public class Polefinder extends LinearOpMode {
     String left;
     String right;
     String dir;
+    OpenCVMultiTest OpenCV = new OpenCVMultiTest();
+
 
     public void runOpMode() {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName), cameraMonitorViewId);
-        OpenCV = new OpenCVMultiTest();
         camera.setPipeline(OpenCV);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -41,20 +41,7 @@ public class Polefinder extends LinearOpMode {
         OpenCV.newBoxes(x[0], y[0], width[0], height[0], x[1], y[1], width[1], height[1], x[2], y[2], width[2], height[2]);
         waitForStart();
         while (opModeIsActive()) {
-            middle = OpenCV.getColor(0);
-            left = OpenCV.getColor(1);
-            right = OpenCV.getColor(2);
-            if (middle == "Yellow") inSight = true;
-            else inSight = false;
-            if (inSight = true) {
-                if ((left == "Yellow") && (right != "Yellow")) {
-                    dir = "Left";
-                } else if ((left != "Yellow") && (right == "Yellow")) {
-                    dir = "Right";
-                } else if ((left == "Yellow") && (right == "Yellow")) {
-                    dir = "Stop";
-                } else dir = "Forward";
-            }
+            findPole();
             tel();
         }
     }

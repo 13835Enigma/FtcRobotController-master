@@ -29,7 +29,7 @@ public class OpenCV extends OpenCvPipeline {
     public int REGION_HEIGHT = 40;
 
     public double[] rgb = {-1, -1, -1};
-    public String sleeveColor;
+    public String sleeveColor = "Yellow";
     public String color;
     // Color definitions
     private final Scalar
@@ -131,6 +131,7 @@ public class OpenCV extends OpenCvPipeline {
         return color;
     }
     public void newBox(double x, double y, int width, int height) {
+        SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(x, y);
         sleeve_pointA = new Point(x, y);
         sleeve_pointB = new Point(
                 x + width,

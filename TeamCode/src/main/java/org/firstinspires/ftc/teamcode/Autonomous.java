@@ -62,7 +62,7 @@ public class Autonomous  extends LinearOpMode {
             @Override
             public void onOpened()
             {
-                camera.startStreaming(320,240, OpenCvCameraRotation.SIDEWAYS_LEFT);
+                camera.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -93,11 +93,11 @@ public class Autonomous  extends LinearOpMode {
         Claw.setPosition(1);
         switch (color) {
             case "Cyan": Center();
-            break;
+                break;
             case "Magenta": Right();
-            break;
+                break;
             case "Yellow": Left();
-            break;
+                break;
         }
         while (FL.isBusy()) {}
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);

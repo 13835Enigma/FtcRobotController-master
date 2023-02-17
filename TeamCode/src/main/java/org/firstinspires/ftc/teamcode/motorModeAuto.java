@@ -75,5 +75,11 @@ public class motorModeAuto {
     public void driveVeloAll(int Velo) {
         driveVelo(Velo, Velo, Velo, Velo);
     }
+    public void zeroPowDriveTrain(DcMotor.ZeroPowerBehavior zeropow) {
+        program.FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        program.FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        program.BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        program.BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+    }
 }

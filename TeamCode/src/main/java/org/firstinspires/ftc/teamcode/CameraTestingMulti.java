@@ -28,11 +28,16 @@ public class CameraTestingMulti extends LinearOpMode {
     double LY = 0;
     double RX = 0;
     double RY = 0;
-    double[] x = {50, 20, 40};
-    double[] y = {50, 20, 40};
-    double[] width = {60, 60, 60};
-    double[] height = {30, 10, 10};
+    String dir = "Stop";
+    double[] x = {200, 200, 200};
+    double[] y = {46, 27, 100};
+    double[] width = {77, 77, 77};
+    double[] height = {31, 5, 5};
     String box = "Main";
+    boolean PoleFind = false;
+    boolean inSight = false;
+    double[] poleMult = {0, 0 };
+    Polefinder poleFinder = new Polefinder();
 
 
     public void runOpMode() {
@@ -62,7 +67,7 @@ public class CameraTestingMulti extends LinearOpMode {
             else if (gamepad1.b) box = "Right";
             else if (gamepad1.y) box = "Main";
             if (box == "Main") {
-                if (((x[0] + width[0]) + LX) <= 240) {
+                if (((x[0] + width[0]) + LX) <= 320) {
                     if ((x[0] + LX) >= 0) {
                         x[0] += LX;
                     }
@@ -70,7 +75,7 @@ public class CameraTestingMulti extends LinearOpMode {
                         width[0] += RX;
                     }
                 }
-                if (((y[0] + height[0]) + LY) <= 320) {
+                if (((y[0] + height[0]) + LY) <= 240) {
                     if ((y[0] + LY) >= 0) {
                         y[0] += LY;
                     }
@@ -120,6 +125,32 @@ public class CameraTestingMulti extends LinearOpMode {
             tel();
         }
     }
+    public void poleFind() {
+        if (gamepad1.a) PoleFind = true;
+        else if (gamepad1.a) PoleFind = false;
+        if (PoleFind == true) {
+            poleFinder.findPole();
+            dir = poleFinder.dir;
+            inSight = poleFinder.inSight;
+            if (dir == "Left") {
+                poleMult[0] = -0.2;
+                poleMult[1] = 0.2;
+            }
+            else if (dir == "Right") {
+                poleMult[0] = 0.2;
+                poleMult[1] = -0.2;
+            }
+            else if (dir == "Forward") {
+                poleMult[0] = 0.2;
+                poleMult[1] = 0.2;
+            }
+            else if (dir == "Stop") {
+                poleMult[0] = 0;
+                poleMult[1] = 0;
+                PoleFind = false;
+            }
+        }
+    }
     public void tel() {
         telemetry.addData("X Main: ", x[0]);
         telemetry.addData("Y Main: ", y[0]);
@@ -136,6 +167,8 @@ public class CameraTestingMulti extends LinearOpMode {
         telemetry.addData("Width Main: ", width[2]);
         telemetry.addData("Height Right: ", height[2]);
         telemetry.addData("Color Right: ", OpenCV.getColor(2));
+        telemetry.addData("Pole Direct: ", dir);
+        telemetry.addData("Pole Finder: ", PoleFind);
         telemetry.update();
     }
 }

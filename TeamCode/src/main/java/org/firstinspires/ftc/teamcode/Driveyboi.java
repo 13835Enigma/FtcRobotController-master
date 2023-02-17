@@ -32,23 +32,21 @@ public class Driveyboi extends LinearOpMode {
     static DcMotorEx BL;
     static Servo Tilt;
     static Servo Claw;
-    int speed;
-    int LiftTarget;
-    double strafe;
-    double mult;
     double Lims[] = {1, 0.68, 0.87, 0.32};
     double TiltPos = 0.45;
     double ClawPos = 0.67;
-    int liftPos = 0;
     private OpenCvCamera camera;
     private OpenCVMultiTest OpenCV;
 
     private String webcamName = "WebcamMain";
+    String dir = "Stop";
+
     boolean PoleFind = false;
-    double time = getRuntime();
+    boolean inSight = false;
+    double[] poleMult = {0, 0 };
+    Polefinder poleFinder = new Polefinder();
 
     public void runOpMode() {
-        Polefinder poleFinder = new Polefinder();
         motorMode driveMode = new motorMode();
         motors motors = new motors();
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -84,7 +82,7 @@ public class Driveyboi extends LinearOpMode {
         while (opModeIsActive()) {
             Lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            motors.setMotors(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,gamepad1.right_stick_y, gamepad1.left_trigger, gamepad1.right_trigger, gamepad1.left_bumper, gamepad1.right_bumper);
+            motors.setMotors(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,gamepad1.right_stick_y, gamepad1.left_trigger, gamepad1.right_trigger, gamepad1.left_bumper, gamepad1.right_bumper, poleMult[0], poleMult[1]);
             lift();
             Claw();
             tel();
@@ -172,9 +170,33 @@ public class Driveyboi extends LinearOpMode {
     public void poleFind() {
         if (gamepad1.a) PoleFind = true;
         else if (gamepad1.a) PoleFind = false;
+        if (PoleFind == true) {
+            poleFinder.findPole();
+            dir = poleFinder.dir;
+            inSight = poleFinder.inSight;
+            if (dir == "Left") {
+                poleMult[0] = -0.2;
+                poleMult[1] = 0.2;
+            }
+            else if (dir == "Right") {
+                poleMult[0] = 0.2;
+                poleMult[1] = -0.2;
+            }
+            else if (dir == "Forward") {
+                poleMult[0] = 0.2;
+                poleMult[1] = 0.2;
+            }
+            else if (dir == "Stop") {
+                poleMult[0] = 0;
+                poleMult[1] = 0;
+                PoleFind = false;
+            }
+        }
     }
     public void tel() {
-        telemetry.addData("Angle: ", angles.firstAngle);
+        telemetry.addData("Pole Direct: ", dir);
+        telemetry.addData("Pole Finder: ", PoleFind);
+        telemetry.addData("Angle: ", angles.firstAngle + 180);
         telemetry.addData("Lift: ", Lift.getCurrentPosition());
         telemetry.addData("Tilt: ", Tilt.getPosition());
         telemetry.addData("Claw: ", Claw.getPosition());
